@@ -5,81 +5,210 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Hipotecaria — Cataluña</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ── Base ── */
-        .gradient-bg {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+        /* ── Design tokens ── */
+        :root {
+            --cream:      #FDFBF7;
+            --cream-50:   #F5F1E8;
+            --cream-100:  #EDE8DC;
+            --ink:        #1C1917;
+            --ink-60:     #57534E;
+            --ink-30:     #A8A29E;
+            --ink-10:     #E7E5E4;
+            --indigo:     #4F46E5;
+            --indigo-dk:  #3730A3;
+            --indigo-lt:  #EEF2FF;
+            --radius-xl:  2rem;
+            --radius-lg:  calc(2rem - 0.5rem);
         }
 
-        /* ── Inputs ── */
+        /* ── Base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100dvh;
+        }
+
+        /* ── Film-grain overlay (Editorial Luxury texture) ── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 220px 220px;
+            opacity: 0.028;
+            mix-blend-mode: multiply;
+        }
+
+        /* ── Typography ── */
+        .serif { font-family: 'DM Serif Display', serif; }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.6875rem;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-60);
+            background: var(--cream-50);
+            border: 1px solid var(--ink-10);
+            border-radius: 9999px;
+            padding: 0.3rem 0.875rem;
+        }
+
+        /* ── Double-Bezel outer shell ── */
+        .bezel-outer {
+            background: rgba(28,25,23,0.035);
+            border: 1px solid rgba(28,25,23,0.07);
+            border-radius: var(--radius-xl);
+            padding: 6px;
+        }
+        /* Inner core */
+        .bezel-inner {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            box-shadow:
+                inset 0 1px 1px rgba(255,255,255,0.9),
+                0 1px 3px rgba(28,25,23,0.04),
+                0 4px 16px rgba(28,25,23,0.06);
+            overflow: hidden;
+        }
+
+        /* ── Section label ── */
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ink-30);
+            margin-bottom: 1.25rem;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--ink-10);
+        }
+        .section-icon {
+            width: 1.625rem;
+            height: 1.625rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            flex-shrink: 0;
+        }
+
+        /* ── Input field — double-bezel ── */
+        .input-wrap {
+            position: relative;
+        }
+        .input-icon-left {
+            position: absolute;
+            inset-y: 0;
+            left: 0.875rem;
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+            color: var(--ink-30);
+            font-size: 0.75rem;
+        }
         .input-field {
             display: block;
             width: 100%;
-            border-radius: 0.375rem;
-            border: 1px solid #d1d5db;
-            padding: 0.5rem 0.75rem 0.5rem 2rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: border-color 0.15s cubic-bezier(0.25,0,0,1),
-                        box-shadow 0.15s cubic-bezier(0.25,0,0,1);
+            border-radius: 0.625rem;
+            border: 1px solid var(--ink-10);
+            background: var(--cream);
+            padding: 0.625rem 0.875rem 0.625rem 2.25rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--ink);
+            box-shadow:
+                inset 0 1px 2px rgba(28,25,23,0.04),
+                0 1px 2px rgba(255,255,255,0.8);
+            transition:
+                border-color 0.15s cubic-bezier(0.25,0,0,1),
+                box-shadow 0.15s cubic-bezier(0.25,0,0,1);
+            -webkit-appearance: none;
         }
         .input-field:focus {
             outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
-        }
-        .input-field.no-icon { padding-left: 0.75rem; }
-
-        /* ── Result cards — Jakub: shadow over border, smooth easing ── */
-        .result-card {
-            transition: transform 0.25s cubic-bezier(0.25,0,0,1),
-                        box-shadow 0.25s cubic-bezier(0.25,0,0,1);
-            will-change: transform;
-        }
-        .result-card:hover {
-            transform: translateY(-3px);
+            border-color: var(--indigo);
             box-shadow:
-                0px 0px 0px 1px rgba(0,0,0,0.06),
-                0px 4px 12px -2px rgba(0,0,0,0.1),
-                0px 8px 20px -4px rgba(0,0,0,0.06);
+                inset 0 1px 2px rgba(28,25,23,0.02),
+                0 0 0 3px rgba(79,70,229,0.12);
         }
+        input[type="date"].input-field { padding-left: 2.25rem; }
 
-        /* ── Jakub's enter recipe: opacity + translateY + blur ── */
-        /* Applied to whole panels that appear after interaction.    */
-        /* The blur "materializes" the element rather than just fading it. */
-        .section-enter {
-            opacity: 0;
-            transform: translateY(14px);
-            filter: blur(4px);
+        /* ── Tipo vivienda selector ── */
+        .tipo-selector { display: flex; gap: 0.5rem; }
+        .tipo-option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            border: 1.5px solid var(--ink-10);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
             transition:
-                opacity  0.45s cubic-bezier(0.25,0,0,1),
-                transform 0.45s cubic-bezier(0.25,0,0,1),
-                filter   0.4s  cubic-bezier(0.25,0,0,1);
+                border-color 0.2s cubic-bezier(0.25,0,0,1),
+                background 0.2s cubic-bezier(0.25,0,0,1),
+                box-shadow 0.2s cubic-bezier(0.25,0,0,1);
+            background: var(--cream);
         }
-        .section-enter.visible {
-            opacity: 1;
-            transform: translateY(0);
-            filter: blur(0px);
+        .tipo-option input[type="radio"] { display: none; }
+        .tipo-option-dot {
+            width: 0.875rem;
+            height: 0.875rem;
+            border-radius: 9999px;
+            border: 1.5px solid var(--ink-30);
+            flex-shrink: 0;
+            transition: border-color 0.15s, background 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+        .tipo-option-dot::after {
+            content: '';
+            width: 0.375rem;
+            height: 0.375rem;
+            border-radius: 9999px;
+            background: var(--indigo);
+            transform: scale(0);
+            transition: transform 0.15s cubic-bezier(0.25,0,0,1);
+        }
+        .tipo-option.active {
+            border-color: var(--indigo);
+            background: var(--indigo-lt);
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
+        }
+        .tipo-option.active .tipo-option-dot {
+            border-color: var(--indigo);
+        }
+        .tipo-option.active .tipo-option-dot::after {
+            transform: scale(1);
+        }
+        .tipo-name { font-size: 0.8125rem; font-weight: 600; color: var(--ink); }
+        .tipo-sub  { font-size: 0.7rem; color: var(--ink-60); font-weight: 400; }
 
-        /* ── Staggered card entrance ── */
-        .stagger-card {
-            opacity: 0;
-            transform: translateY(8px);
-            filter: blur(2px);
-            transition:
-                opacity  0.35s cubic-bezier(0.25,0,0,1),
-                transform 0.35s cubic-bezier(0.25,0,0,1),
-                filter   0.3s  cubic-bezier(0.25,0,0,1);
-            transition-delay: var(--card-delay, 0ms);
-        }
-        .stagger-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-            filter: blur(0px);
-        }
-
-        /* ── Tax toggle — animated height instead of display:none snap ── */
+        /* ── Tax toggle — animated max-height ── */
         .tax-toggle {
             overflow: hidden;
             max-height: 0;
@@ -95,8 +224,54 @@
             pointer-events: auto;
         }
 
-        /* ── Result row smooth show/hide ── */
-        /* Rows that toggle in the breakdown panel slide in/out rather than snapping. */
+        /* ── CTA Button — pill, button-in-button ── */
+        #calcular {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            background: var(--indigo);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            padding: 1rem 1.5rem 1rem 2rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            will-change: transform;
+            transition:
+                transform 0.12s cubic-bezier(0.25,0,0,1),
+                background 0.2s cubic-bezier(0.25,0,0,1),
+                box-shadow 0.2s cubic-bezier(0.25,0,0,1);
+            box-shadow:
+                0 1px 2px rgba(79,70,229,0.15),
+                0 4px 12px rgba(79,70,229,0.25);
+        }
+        #calcular:hover {
+            background: var(--indigo-dk);
+            box-shadow:
+                0 1px 2px rgba(79,70,229,0.2),
+                0 6px 20px rgba(79,70,229,0.35);
+        }
+        #calcular:active { transform: scale(0.98); }
+        .cta-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.25s cubic-bezier(0.25,0,0,1);
+        }
+        #calcular:hover .cta-icon {
+            transform: translate(2px, -1px) scale(1.08);
+        }
+
+        /* ── Result rows — smooth toggle ── */
         .row-toggle {
             overflow: hidden;
             max-height: 2.5rem;
@@ -113,7 +288,40 @@
             margin-top: 0 !important;
         }
 
-        /* ── Placeholder fade-out ── */
+        /* ── Section enter (Jakub: opacity + translateY + blur) ── */
+        .section-enter {
+            opacity: 0;
+            transform: translateY(14px);
+            filter: blur(4px);
+            transition:
+                opacity   0.45s cubic-bezier(0.25,0,0,1),
+                transform 0.45s cubic-bezier(0.25,0,0,1),
+                filter    0.4s  cubic-bezier(0.25,0,0,1);
+        }
+        .section-enter.visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+
+        /* ── Stagger cards ── */
+        .stagger-card {
+            opacity: 0;
+            transform: translateY(8px);
+            filter: blur(2px);
+            transition:
+                opacity   0.35s cubic-bezier(0.25,0,0,1),
+                transform 0.35s cubic-bezier(0.25,0,0,1),
+                filter    0.3s  cubic-bezier(0.25,0,0,1);
+            transition-delay: var(--card-delay, 0ms);
+        }
+        .stagger-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+
+        /* ── Placeholder exit ── */
         .placeholder-exit {
             opacity: 0;
             transform: translateY(-6px);
@@ -123,15 +331,80 @@
             pointer-events: none;
         }
 
-        /* ── Calcular button — Emil's press scale ── */
-        #calcular {
-            will-change: transform, opacity;
+        /* ── Result cards (bento) ── */
+        .res-card {
+            border-radius: 1rem;
+            padding: 1.125rem 1.25rem;
             transition:
-                opacity   0.2s cubic-bezier(0.25,0,0,1),
-                transform 0.12s cubic-bezier(0.25,0,0,1) !important;
+                transform  0.25s cubic-bezier(0.25,0,0,1),
+                box-shadow 0.25s cubic-bezier(0.25,0,0,1);
+            will-change: transform;
         }
-        #calcular:active {
-            transform: scale(0.98) !important;
+        .res-card:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 0 1px rgba(28,25,23,0.05),
+                0 4px 14px rgba(28,25,23,0.08);
+        }
+        .res-card-hero {
+            background: linear-gradient(135deg, #312E81 0%, #4F46E5 60%, #7C3AED 100%);
+            color: white;
+            border-radius: 1.125rem;
+            padding: 1.5rem;
+        }
+        .res-card-neutral {
+            background: var(--cream);
+            border: 1px solid var(--ink-10);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.9);
+        }
+        .res-card-green {
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+        }
+        .res-card-indigo {
+            background: var(--indigo-lt);
+            border: 1px solid #C7D2FE;
+        }
+        .res-card-muted {
+            background: var(--cream-50);
+            border: 1px solid var(--cream-100);
+        }
+
+        /* ── Tooltip ── */
+        .info-tooltip { position: relative; display: inline-block; cursor: help; }
+        .info-tooltip .tooltip-text {
+            visibility: hidden; width: 220px;
+            background: var(--ink); color: #fff;
+            font-size: 0.6875rem; border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            position: absolute; z-index: 20;
+            bottom: 130%; left: 50%;
+            transform: translateX(-50%); line-height: 1.5;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .info-tooltip:hover .tooltip-text { visibility: visible; }
+
+        /* ── Badge ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #FDE68A;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 1px 6px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+        }
+
+        /* ── Chart ── */
+        .chart-container { height: 380px; width: 100%; }
+        .full-width-chart {
+            width: 100vw; position: relative;
+            left: 50%; right: 50%;
+            margin-left: -50vw; margin-right: -50vw;
         }
 
         /* ── Table row entrance ── */
@@ -139,50 +412,25 @@
             from { opacity: 0; transform: translateY(5px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-        .row-in {
-            animation: rowIn 0.22s cubic-bezier(0.25,0,0,1) both;
+        .row-in { animation: rowIn 0.22s cubic-bezier(0.25,0,0,1) both; }
+
+        /* ── Scroll-reveal (IntersectionObserver) ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            filter: blur(3px);
+            transition:
+                opacity   0.65s cubic-bezier(0.25,0,0,1),
+                transform 0.65s cubic-bezier(0.25,0,0,1),
+                filter    0.55s cubic-bezier(0.25,0,0,1);
+        }
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
         }
 
-        /* ── Layout ── */
-        .chart-container { height: 380px; width: 100%; }
-        .full-width-chart {
-            width: 100vw;
-            position: relative;
-            left: 50%; right: 50%;
-            margin-left: -50vw; margin-right: -50vw;
-        }
-        .section-header {
-            display: flex; align-items: center; gap: 0.5rem;
-            margin-bottom: 1rem; padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        .section-header .icon-circle {
-            width: 2rem; height: 2rem; border-radius: 9999px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem;
-        }
-        .badge-cat {
-            background: #fef3c7; color: #92400e;
-            border: 1px solid #fde68a;
-            font-size: 0.7rem; padding: 1px 6px;
-            border-radius: 9999px; font-weight: 600;
-        }
-        .info-tooltip { position: relative; display: inline-block; cursor: help; }
-        .info-tooltip .tooltip-text {
-            visibility: hidden; width: 220px;
-            background: #1f2937; color: #fff;
-            font-size: 0.75rem; border-radius: 6px;
-            padding: 6px 10px; position: absolute;
-            z-index: 20; bottom: 130%; left: 50%;
-            transform: translateX(-50%); line-height: 1.4;
-        }
-        .info-tooltip:hover .tooltip-text { visibility: visible; }
-
-        @media (max-width: 640px) { .chart-container { height: 280px; } }
-
-        /* ── Accessibility — respect user motion preferences ── */
-        /* When users have motion sensitivity, disable animations while  */
-        /* preserving final states so layouts don't break.               */
+        /* ── Accessibility ── */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -190,459 +438,456 @@
                 transition-duration: 0.01ms !important;
             }
         }
+
+        @media (max-width: 640px) {
+            .chart-container { height: 280px; }
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50">
+<body>
 
-    <!-- Header -->
-    <div class="gradient-bg text-white py-10 px-4 sm:px-6">
-        <div class="max-w-5xl mx-auto text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <i class="fas fa-home text-2xl opacity-80"></i>
-                <h1 class="text-3xl sm:text-4xl font-bold">Calculadora Hipotecaria</h1>
+    <!-- ── HEADER ── -->
+    <header class="pt-20 pb-16 px-4 sm:px-6 text-center">
+        <div class="max-w-2xl mx-auto">
+            <div class="flex justify-center mb-5">
+                <span class="eyebrow">
+                    <i class="fas fa-map-marker-alt" style="color:#4F46E5;font-size:0.55rem"></i>
+                    Cataluña · Hipoteca · 2026
+                </span>
             </div>
-            <p class="text-base sm:text-lg opacity-90">Todos los gastos reales de compraventa e hipoteca · <span class="font-semibold">Cataluña</span></p>
+            <h1 class="serif text-4xl sm:text-5xl lg:text-6xl leading-[1.1] text-[#1C1917] mb-4">
+                Calcula el coste<br><em>real</em> de tu hipoteca
+            </h1>
+            <p class="text-[#57534E] text-base sm:text-lg font-light leading-relaxed max-w-lg mx-auto">
+                Impuestos, notaría, registro, seguros y todos los gastos de compraventa incluidos. Sin sorpresas.
+            </p>
         </div>
-    </div>
+    </header>
 
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 -mt-6">
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div class="p-6 sm:p-8">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- ── MAIN CONTENT ── -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
 
-                    <!-- ── FORMULARIO ── -->
-                    <div class="lg:col-span-2 space-y-8">
+        <!-- Double-bezel outer shell -->
+        <div class="bezel-outer">
+            <!-- Inner core -->
+            <div class="bezel-inner">
+                <div class="grid grid-cols-1 lg:grid-cols-3">
 
-                        <!-- SECCIÓN 1: Inmueble -->
-                        <div>
-                            <div class="section-header">
-                                <div class="icon-circle bg-indigo-100"><i class="fas fa-building text-indigo-600"></i></div>
-                                <h2 class="text-lg font-bold text-gray-800">Datos del inmueble</h2>
+                    <!-- ═══════════════ FORMULARIO ═══════════════ -->
+                    <div class="lg:col-span-2 p-7 sm:p-10 border-b lg:border-b-0 lg:border-r border-[#EDE8DC]">
+                        <div class="space-y-9">
+
+                            <!-- SECCIÓN: Inmueble -->
+                            <div>
+                                <div class="section-label">
+                                    <span class="section-icon bg-[#EEF2FF]"><i class="fas fa-building text-[#4F46E5]"></i></span>
+                                    Inmueble
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                    <!-- Tipo de vivienda -->
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-600 text-[#57534E] mb-2 tracking-wide uppercase" style="font-size:0.7rem;letter-spacing:0.08em;font-weight:600">Tipo de vivienda</label>
+                                        <div class="tipo-selector">
+                                            <label class="tipo-option active" id="label-segunda">
+                                                <input type="radio" name="tipo-vivienda" value="segunda" checked>
+                                                <span class="tipo-option-dot"></span>
+                                                <div>
+                                                    <div class="tipo-name">Segunda mano</div>
+                                                    <div class="tipo-sub">ITP 10%</div>
+                                                </div>
+                                            </label>
+                                            <label class="tipo-option" id="label-nueva">
+                                                <input type="radio" name="tipo-vivienda" value="nueva">
+                                                <span class="tipo-option-dot"></span>
+                                                <div>
+                                                    <div class="tipo-name">Obra nueva</div>
+                                                    <div class="tipo-sub">IVA 10% + AJD 1,5%</div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="valor-inmueble" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Valor del inmueble (€)</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-euro-sign"></i></span>
+                                            <input type="number" id="valor-inmueble" class="input-field" placeholder="250000" min="1000" step="1000" value="250000">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="porcentaje-financiacion" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">% Financiación</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-percent"></i></span>
+                                            <input type="number" id="porcentaje-financiacion" class="input-field" placeholder="80" min="10" max="100" step="1" value="80">
+                                        </div>
+                                        <p class="text-[0.68rem] text-[#A8A29E] mt-1">Máx. 80% primera vivienda · 70% segunda</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
-                                <!-- Tipo de vivienda -->
-                                <div class="sm:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de vivienda</label>
-                                    <div class="flex gap-3">
-                                        <label class="flex-1 flex items-center gap-2 border-2 border-indigo-500 bg-indigo-50 rounded-lg px-4 py-3 cursor-pointer transition" id="label-segunda">
-                                            <input type="radio" name="tipo-vivienda" value="segunda" checked class="text-indigo-600">
-                                            <div>
-                                                <div class="font-medium text-sm text-gray-800">Segunda mano</div>
-                                                <div class="text-xs text-gray-500">ITP 10%</div>
-                                            </div>
+                            <!-- SECCIÓN: Hipoteca -->
+                            <div>
+                                <div class="section-label">
+                                    <span class="section-icon bg-[#F5F3FF]"><i class="fas fa-landmark text-[#7C3AED]"></i></span>
+                                    Condiciones hipoteca
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="plazo" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Plazo (años)</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-calendar-alt"></i></span>
+                                            <input type="number" id="plazo" class="input-field" placeholder="30" min="1" max="40" value="30">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="interes" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Tipo de interés (%)</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-percent"></i></span>
+                                            <input type="number" id="interes" class="input-field" placeholder="3.5" min="0.1" max="20" step="0.01" value="3.5">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="fecha-inicio" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Fecha inicio</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-calendar-day"></i></span>
+                                            <input type="date" id="fecha-inicio" class="input-field">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="comision-apertura" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            Comisión apertura (%)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]">
+                                                <i class="fas fa-info-circle" style="font-size:0.65rem"></i>
+                                                <span class="tooltip-text">% sobre el capital prestado. Muchas hipotecas actuales la tienen a 0%.</span>
+                                            </span>
                                         </label>
-                                        <label class="flex-1 flex items-center gap-2 border-2 border-gray-200 rounded-lg px-4 py-3 cursor-pointer transition" id="label-nueva">
-                                            <input type="radio" name="tipo-vivienda" value="nueva" class="text-indigo-600">
-                                            <div>
-                                                <div class="font-medium text-sm text-gray-800">Obra nueva</div>
-                                                <div class="text-xs text-gray-500">IVA 10% + AJD 1.5%</div>
-                                            </div>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-percent"></i></span>
+                                            <input type="number" id="comision-apertura" class="input-field" placeholder="0" min="0" max="5" step="0.1" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECCIÓN: Impuestos -->
+                            <div>
+                                <div class="section-label">
+                                    <span class="section-icon bg-[#FFFBEB]"><i class="fas fa-file-invoice text-[#D97706]"></i></span>
+                                    Impuestos compraventa
+                                    <span class="badge" style="margin-left:0.25rem">Cataluña</span>
+                                </div>
+
+                                <!-- ITP (segunda mano) -->
+                                <div id="bloque-itp" class="tax-toggle active grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="coste-itp" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            ITP (€)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]">
+                                                <i class="fas fa-info-circle" style="font-size:0.65rem"></i>
+                                                <span class="tooltip-text">Impuesto de Transmisiones Patrimoniales. En Cataluña, 10% para segunda mano.</span>
+                                            </span>
                                         </label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-file-invoice-dollar"></i></span>
+                                            <input type="number" id="coste-itp" class="input-field" placeholder="25000" min="0" step="100" value="25000">
+                                        </div>
+                                        <p class="text-[0.68rem] text-[#A8A29E] mt-1">Calculado automáticamente al 10%</p>
                                     </div>
                                 </div>
 
-                                <!-- Valor inmueble -->
-                                <div>
-                                    <label for="valor-inmueble" class="block text-sm font-medium text-gray-700 mb-1">Valor del inmueble (€)</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-euro-sign text-gray-400"></i></div>
-                                        <input type="number" id="valor-inmueble" class="input-field" placeholder="250000" min="1000" step="1000" value="250000">
+                                <!-- IVA + AJD (obra nueva) -->
+                                <div id="bloque-iva-ajd" class="tax-toggle grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="coste-iva" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            IVA (€)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]">
+                                                <i class="fas fa-info-circle" style="font-size:0.65rem"></i>
+                                                <span class="tooltip-text">Para obra nueva residencial, IVA del 10%. VPO 4%.</span>
+                                            </span>
+                                        </label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-file-invoice-dollar"></i></span>
+                                            <input type="number" id="coste-iva" class="input-field" placeholder="25000" min="0" step="100">
+                                        </div>
+                                        <p class="text-[0.68rem] text-[#A8A29E] mt-1">Al 10% automático</p>
                                     </div>
-                                </div>
-
-                                <!-- % Financiación -->
-                                <div>
-                                    <label for="porcentaje-financiacion" class="block text-sm font-medium text-gray-700 mb-1">% Financiación</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-percent text-gray-400"></i></div>
-                                        <input type="number" id="porcentaje-financiacion" class="input-field" placeholder="80" min="10" max="100" step="1" value="80">
+                                    <div>
+                                        <label for="coste-ajd" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            AJD (€)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]">
+                                                <i class="fas fa-info-circle" style="font-size:0.65rem"></i>
+                                                <span class="tooltip-text">Actos Jurídicos Documentados. Cataluña 1,5% compraventa. El AJD hipotecario lo paga el banco.</span>
+                                            </span>
+                                        </label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-file-invoice-dollar"></i></span>
+                                            <input type="number" id="coste-ajd" class="input-field" placeholder="3750" min="0" step="100">
+                                        </div>
+                                        <p class="text-[0.68rem] text-[#A8A29E] mt-1">Al 1,5% automático</p>
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-1">Máx. 80% para primera vivienda · 70% para segunda</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SECCIÓN 2: Hipoteca -->
-                        <div>
-                            <div class="section-header">
-                                <div class="icon-circle bg-purple-100"><i class="fas fa-landmark text-purple-600"></i></div>
-                                <h2 class="text-lg font-bold text-gray-800">Condiciones de la hipoteca</h2>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label for="plazo" class="block text-sm font-medium text-gray-700 mb-1">Plazo (años)</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-calendar-alt text-gray-400"></i></div>
-                                        <input type="number" id="plazo" class="input-field" placeholder="30" min="1" max="40" value="30">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="interes" class="block text-sm font-medium text-gray-700 mb-1">Tipo de interés anual (%)</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-percent text-gray-400"></i></div>
-                                        <input type="number" id="interes" class="input-field" placeholder="3.5" min="0.1" max="20" step="0.01" value="3.5">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="fecha-inicio" class="block text-sm font-medium text-gray-700 mb-1">Fecha de inicio</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-calendar-day text-gray-400"></i></div>
-                                        <input type="date" id="fecha-inicio" class="input-field">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="comision-apertura" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Comisión apertura (%)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">Porcentaje sobre el capital prestado. Muchas hipotecas actuales la tienen a 0%.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-percent text-gray-400"></i></div>
-                                        <input type="number" id="comision-apertura" class="input-field" placeholder="0" min="0" max="5" step="0.1" value="0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SECCIÓN 3: Impuestos compraventa -->
-                        <div>
-                            <div class="section-header">
-                                <div class="icon-circle bg-yellow-100"><i class="fas fa-file-invoice text-yellow-600"></i></div>
-                                <h2 class="text-lg font-bold text-gray-800">
-                                    Impuestos de compraventa
-                                    <span class="badge-cat ml-2">Cataluña</span>
-                                </h2>
-                            </div>
-
-                            <!-- ITP (segunda mano) -->
-                            <div id="bloque-itp" class="tax-toggle active grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label for="coste-itp" class="block text-sm font-medium text-gray-700 mb-1">
-                                        ITP — Impuesto Transmisiones Patrimoniales (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">En Cataluña, el ITP para segunda mano es del 10% sobre el valor escriturado. Se calcula automáticamente pero puedes editarlo.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-file-invoice-dollar text-gray-400"></i></div>
-                                        <input type="number" id="coste-itp" class="input-field" placeholder="25000" min="0" step="100" value="25000">
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-1">Calculado automáticamente al 10%</p>
                                 </div>
                             </div>
 
-                            <!-- IVA + AJD (obra nueva) -->
-                            <div id="bloque-iva-ajd" class="tax-toggle grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label for="coste-iva" class="block text-sm font-medium text-gray-700 mb-1">
-                                        IVA (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">Para obra nueva residencial, el IVA es del 10%. Para VPO es del 4%.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-file-invoice-dollar text-gray-400"></i></div>
-                                        <input type="number" id="coste-iva" class="input-field" placeholder="25000" min="0" step="100">
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-1">Calculado automáticamente al 10%</p>
+                            <!-- SECCIÓN: Gastos compraventa -->
+                            <div>
+                                <div class="section-label">
+                                    <span class="section-icon bg-[#EFF6FF]"><i class="fas fa-stamp text-[#2563EB]"></i></span>
+                                    Gastos de compraventa
                                 </div>
-                                <div>
-                                    <label for="coste-ajd" class="block text-sm font-medium text-gray-700 mb-1">
-                                        AJD — Actos Jurídicos Documentados (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">En Cataluña, el AJD para la escritura de compraventa de obra nueva es del 1,5% sobre el valor escriturado. El AJD de la hipoteca lo paga el banco desde 2018.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-file-invoice-dollar text-gray-400"></i></div>
-                                        <input type="number" id="coste-ajd" class="input-field" placeholder="3750" min="0" step="100">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="coste-notaria" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            Notaría (€)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]"><i class="fas fa-info-circle" style="font-size:0.65rem"></i><span class="tooltip-text">Escritura de compraventa. La hipoteca la paga el banco desde 2018.</span></span>
+                                        </label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-file-signature"></i></span>
+                                            <input type="number" id="coste-notaria" class="input-field" placeholder="900" min="0" step="50" value="900">
+                                        </div>
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-1">Calculado automáticamente al 1,5%</p>
+                                    <div>
+                                        <label for="coste-registro" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Registro (€)</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-book"></i></span>
+                                            <input type="number" id="coste-registro" class="input-field" placeholder="400" min="0" step="50" value="400">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="coste-gestoria" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Gestoría (€)</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-user-tie"></i></span>
+                                            <input type="number" id="coste-gestoria" class="input-field" placeholder="400" min="0" step="50" value="400">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- SECCIÓN 4: Gastos de compraventa -->
-                        <div>
-                            <div class="section-header">
-                                <div class="icon-circle bg-blue-100"><i class="fas fa-stamp text-blue-600"></i></div>
-                                <h2 class="text-lg font-bold text-gray-800">Gastos de compraventa</h2>
+                            <!-- SECCIÓN: Tasación y seguros -->
+                            <div>
+                                <div class="section-label">
+                                    <span class="section-icon bg-[#F0FDF4]"><i class="fas fa-shield-alt text-[#16A34A]"></i></span>
+                                    Tasación y seguros
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="coste-tasacion" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            Tasación (€)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]"><i class="fas fa-info-circle" style="font-size:0.65rem"></i><span class="tooltip-text">Informe obligatorio para la hipoteca. Entre 250€ y 600€.</span></span>
+                                        </label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-search-dollar"></i></span>
+                                            <input type="number" id="coste-tasacion" class="input-field" placeholder="350" min="0" step="50" value="350">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="coste-seguro-hogar" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            Seguro hogar/año (€)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]"><i class="fas fa-info-circle" style="font-size:0.65rem"></i><span class="tooltip-text">Obligatorio para obtener la hipoteca. Entre 200€ y 500€/año.</span></span>
+                                        </label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-home"></i></span>
+                                            <input type="number" id="coste-seguro-hogar" class="input-field" placeholder="300" min="0" step="50" value="300">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="coste-seguro-vida" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">
+                                            Seguro vida/año (€)
+                                            <span class="info-tooltip ml-1 text-[#A8A29E]"><i class="fas fa-info-circle" style="font-size:0.65rem"></i><span class="tooltip-text">No obligatorio, pero muchos bancos lo vinculan a la bonificación del tipo.</span></span>
+                                        </label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-heart"></i></span>
+                                            <input type="number" id="coste-seguro-vida" class="input-field" placeholder="0" min="0" step="50" value="0">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="coste-otros" class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Otros gastos (€)</label>
+                                        <div class="input-wrap">
+                                            <span class="input-icon-left"><i class="fas fa-receipt"></i></span>
+                                            <input type="number" id="coste-otros" class="input-field" placeholder="0" min="0" step="50" value="0">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label for="coste-notaria" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Notaría — escritura compraventa (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">Honorarios del notario por la firma de la escritura de compraventa. Varía según el valor del inmueble. Desde la Ley de 2018, la escritura de hipoteca la paga el banco.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-file-signature text-gray-400"></i></div>
-                                        <input type="number" id="coste-notaria" class="input-field" placeholder="900" min="0" step="50" value="900">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="coste-registro" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Registro de la Propiedad (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">Inscripción de la compraventa en el Registro de la Propiedad. Aproximadamente el 50% del coste de notaría.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-book text-gray-400"></i></div>
-                                        <input type="number" id="coste-registro" class="input-field" placeholder="400" min="0" step="50" value="400">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="coste-gestoria" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Gestoría (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">Honorarios de la gestoría para la liquidación de impuestos y presentación de documentos en el Registro. Entre 300€ y 600€ habitualmente.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-user-tie text-gray-400"></i></div>
-                                        <input type="number" id="coste-gestoria" class="input-field" placeholder="400" min="0" step="50" value="400">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- SECCIÓN 5: Gastos hipotecarios y seguros -->
-                        <div>
-                            <div class="section-header">
-                                <div class="icon-circle bg-green-100"><i class="fas fa-shield-alt text-green-600"></i></div>
-                                <h2 class="text-lg font-bold text-gray-800">Tasación y seguros</h2>
+                            <!-- SECCIÓN: Amortizaciones anticipadas -->
+                            <div>
+                                <div class="section-label">
+                                    <span class="section-icon bg-[#F0FDFA]"><i class="fas fa-plus text-[#0D9488]"></i></span>
+                                    Amortizaciones anticipadas
+                                </div>
+                                <div id="aportaciones-container" class="space-y-3"></div>
+                                <button id="agregar-aportacion" class="mt-3 flex items-center gap-1.5 text-[#4F46E5] hover:text-[#3730A3] text-xs font-semibold uppercase tracking-wider transition-colors duration-150" style="letter-spacing:0.08em">
+                                    <i class="fas fa-plus-circle text-sm"></i>
+                                    Añadir amortización
+                                </button>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div>
-                                    <label for="coste-tasacion" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Tasación (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">Informe de tasación obligatorio para obtener la hipoteca. Lo paga el comprador. Suele costar entre 250€ y 600€.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-search-dollar text-gray-400"></i></div>
-                                        <input type="number" id="coste-tasacion" class="input-field" placeholder="350" min="0" step="50" value="350">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="coste-seguro-hogar" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Seguro de hogar anual (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">El seguro de hogar (daños) es obligatorio para obtener la hipoteca. La prima anual suele estar entre 200€ y 500€. Se incluye en la inversión inicial.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-home text-gray-400"></i></div>
-                                        <input type="number" id="coste-seguro-hogar" class="input-field" placeholder="300" min="0" step="50" value="300">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="coste-seguro-vida" class="block text-sm font-medium text-gray-700 mb-1">
-                                        Seguro de vida anual (€)
-                                        <span class="info-tooltip ml-1 text-gray-400">
-                                            <i class="fas fa-info-circle text-xs"></i>
-                                            <span class="tooltip-text">No es obligatorio por ley, pero muchos bancos lo condicionan para obtener una bonificación en el tipo de interés. Entre 200€ y 800€/año según edad y capital.</span>
-                                        </span>
-                                    </label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-heart text-gray-400"></i></div>
-                                        <input type="number" id="coste-seguro-vida" class="input-field" placeholder="0" min="0" step="50" value="0">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="coste-otros" class="block text-sm font-medium text-gray-700 mb-1">Otros gastos (€)</label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-receipt text-gray-400"></i></div>
-                                        <input type="number" id="coste-otros" class="input-field" placeholder="0" min="0" step="50" value="0">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- SECCIÓN 6: Aportaciones adicionales -->
-                        <div>
-                            <div class="section-header">
-                                <div class="icon-circle bg-teal-100"><i class="fas fa-plus text-teal-600"></i></div>
-                                <h2 class="text-lg font-bold text-gray-800">Amortizaciones anticipadas</h2>
-                            </div>
-                            <div id="aportaciones-container" class="space-y-3"></div>
-                            <button id="agregar-aportacion" class="mt-3 text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1">
-                                <i class="fas fa-plus-circle"></i> Añadir amortización anticipada
+                            <!-- CTA -->
+                            <button id="calcular">
+                                <span>Calcular hipoteca completa</span>
+                                <span class="cta-icon"><i class="fas fa-arrow-right" style="font-size:0.75rem"></i></span>
                             </button>
+
+                        </div><!-- /space-y-9 -->
+                    </div><!-- /form col -->
+
+                    <!-- ═══════════════ PANEL RESULTADOS ═══════════════ -->
+                    <div class="p-6 sm:p-8 bg-[#FDFBF7] lg:bg-[#F5F1E8]/40 relative">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A8A29E] mb-5" style="letter-spacing:0.14em">Resultados</p>
+
+                        <!-- Empty state -->
+                        <div id="sin-resultados" class="flex flex-col items-center justify-center py-16 text-center">
+                            <div class="w-14 h-14 rounded-2xl bg-[#EDE8DC] flex items-center justify-center mb-4">
+                                <i class="fas fa-calculator text-[#A8A29E] text-xl"></i>
+                            </div>
+                            <p class="text-sm text-[#A8A29E] leading-relaxed max-w-[200px]">Introduce los datos y pulsa <strong class="text-[#57534E]">Calcular</strong></p>
                         </div>
 
-                        <!-- Botón calcular -->
-                        <button id="calcular" class="w-full gradient-bg text-white py-3.5 px-4 rounded-xl font-semibold hover:opacity-90 transition duration-200 flex items-center justify-center gap-2 text-base shadow-lg shadow-indigo-200">
-                            <i class="fas fa-calculator"></i> Calcular hipoteca completa
-                        </button>
-                    </div>
-
-                    <!-- ── PANEL DE RESULTADOS ── -->
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800 mb-4">Resultados</h2>
-
-                        <!-- Estado sin calcular -->
-                        <div id="sin-resultados" class="bg-gray-50 rounded-xl p-8 text-center border border-dashed border-gray-200">
-                            <i class="fas fa-calculator text-gray-300 text-5xl mb-3"></i>
-                            <p class="text-gray-400 text-sm">Introduce los datos y pulsa <strong>Calcular</strong> para ver el desglose completo</p>
-                        </div>
-
-                        <!-- Resultados calculados -->
+                        <!-- Results -->
                         <div id="resultados" class="space-y-3 section-enter">
 
-                            <!-- Cuota mensual (destacada) -->
-                            <div class="result-card gradient-bg text-white rounded-xl p-5 stagger-card" style="--card-delay:0ms">
-                                <p class="text-sm opacity-80 mb-1">Cuota mensual</p>
-                                <p id="cuota-mensual" class="text-3xl font-bold">—</p>
-                                <p class="text-xs opacity-70 mt-1">Sistema de amortización francés</p>
+                            <!-- Cuota mensual — hero card -->
+                            <div class="res-card res-card-hero stagger-card" style="--card-delay:0ms">
+                                <p class="text-[0.7rem] font-medium uppercase tracking-widest opacity-70 mb-2" style="letter-spacing:0.14em">Cuota mensual</p>
+                                <p id="cuota-mensual" class="text-3xl font-bold tracking-tight">—</p>
+                                <p class="text-[0.7rem] opacity-50 mt-2">Sistema de amortización francés</p>
                             </div>
 
-                            <!-- Métricas hipoteca -->
-                            <div class="grid grid-cols-2 gap-3 stagger-card" style="--card-delay:70ms">
-                                <div class="result-card bg-white border border-gray-200 rounded-xl p-4">
-                                    <p class="text-xs text-gray-500 mb-1">Total hipoteca</p>
-                                    <p id="total-pagar" class="text-lg font-bold text-gray-800">—</p>
+                            <!-- Grid 2 cols -->
+                            <div class="grid grid-cols-2 gap-2.5 stagger-card" style="--card-delay:70ms">
+                                <div class="res-card res-card-neutral">
+                                    <p class="text-[0.65rem] text-[#A8A29E] uppercase tracking-wide mb-1" style="font-size:0.63rem;letter-spacing:0.1em">Total hipoteca</p>
+                                    <p id="total-pagar" class="text-sm font-bold text-[#1C1917]">—</p>
                                 </div>
-                                <div class="result-card bg-white border border-gray-200 rounded-xl p-4">
-                                    <p class="text-xs text-gray-500 mb-1">Intereses totales</p>
-                                    <p id="intereses-totales" class="text-lg font-bold text-red-500">—</p>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-3 stagger-card" style="--card-delay:130ms">
-                                <div class="result-card bg-white border border-gray-200 rounded-xl p-4">
-                                    <p class="text-xs text-gray-500 mb-1">Fin hipoteca</p>
-                                    <p id="fecha-fin" class="text-sm font-bold text-gray-800">—</p>
-                                </div>
-                                <div class="result-card bg-green-50 border border-green-200 rounded-xl p-4">
-                                    <p class="text-xs text-green-700 mb-1">Ahorro amortizaciones</p>
-                                    <p id="ahorro-aportaciones" class="text-sm font-bold text-green-700">—</p>
+                                <div class="res-card res-card-neutral">
+                                    <p class="text-[0.65rem] text-[#A8A29E] uppercase tracking-wide mb-1" style="font-size:0.63rem;letter-spacing:0.1em">Intereses</p>
+                                    <p id="intereses-totales" class="text-sm font-bold text-red-500">—</p>
                                 </div>
                             </div>
 
-                            <!-- Desglose inversión inicial -->
-                            <div class="bg-gray-50 rounded-xl p-5 mt-2 border border-gray-100 stagger-card" style="--card-delay:190ms">
-                                <h3 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
-                                    <i class="fas fa-list-ul text-indigo-400"></i>
-                                    Liquidez necesaria el día de la firma
-                                </h3>
-                                <div class="space-y-2 text-sm">
+                            <!-- Grid 2 cols -->
+                            <div class="grid grid-cols-2 gap-2.5 stagger-card" style="--card-delay:130ms">
+                                <div class="res-card res-card-neutral">
+                                    <p class="text-[0.65rem] text-[#A8A29E] uppercase tracking-wide mb-1" style="font-size:0.63rem;letter-spacing:0.1em">Fin hipoteca</p>
+                                    <p id="fecha-fin" class="text-xs font-bold text-[#1C1917]">—</p>
+                                </div>
+                                <div class="res-card res-card-green">
+                                    <p class="text-[0.65rem] text-green-700 uppercase tracking-wide mb-1" style="font-size:0.63rem;letter-spacing:0.1em">Ahorro amort.</p>
+                                    <p id="ahorro-aportaciones" class="text-xs font-bold text-green-700">—</p>
+                                </div>
+                            </div>
+
+                            <!-- Desglose liquidez -->
+                            <div class="res-card res-card-muted stagger-card" style="--card-delay:190ms">
+                                <p class="text-[0.65rem] font-bold text-[#57534E] uppercase tracking-widest mb-3 flex items-center gap-1.5" style="font-size:0.63rem;letter-spacing:0.12em">
+                                    <i class="fas fa-list-ul text-[#A8A29E]"></i>
+                                    Liquidez día de la firma
+                                </p>
+                                <div class="space-y-2 text-xs">
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">Entrada</span>
-                                        <span id="res-entrada" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Entrada</span>
+                                        <span id="res-entrada" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center row-toggle" id="row-itp">
-                                        <span class="text-gray-600 flex items-center gap-1">
-                                            ITP <span class="badge-cat">10%</span>
-                                        </span>
-                                        <span id="res-itp" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E] flex items-center gap-1">ITP <span class="badge">10%</span></span>
+                                        <span id="res-itp" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center row-toggle collapsed" id="row-iva">
-                                        <span class="text-gray-600 flex items-center gap-1">
-                                            IVA <span class="badge-cat">10%</span>
-                                        </span>
-                                        <span id="res-iva" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E] flex items-center gap-1">IVA <span class="badge">10%</span></span>
+                                        <span id="res-iva" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center row-toggle collapsed" id="row-ajd">
-                                        <span class="text-gray-600 flex items-center gap-1">
-                                            AJD <span class="badge-cat">1,5%</span>
-                                        </span>
-                                        <span id="res-ajd" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E] flex items-center gap-1">AJD <span class="badge">1,5%</span></span>
+                                        <span id="res-ajd" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">Notaría compraventa</span>
-                                        <span id="res-notaria" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Notaría</span>
+                                        <span id="res-notaria" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">Registro de la Propiedad</span>
-                                        <span id="res-registro" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Registro</span>
+                                        <span id="res-registro" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">Gestoría</span>
-                                        <span id="res-gestoria" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Gestoría</span>
+                                        <span id="res-gestoria" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">Tasación</span>
-                                        <span id="res-tasacion" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Tasación</span>
+                                        <span id="res-tasacion" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center row-toggle collapsed" id="row-apertura">
-                                        <span class="text-gray-600">Comisión apertura</span>
-                                        <span id="res-apertura" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Com. apertura</span>
+                                        <span id="res-apertura" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">Seguro hogar (1er año)</span>
-                                        <span id="res-seguro-hogar" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Seguro hogar</span>
+                                        <span id="res-seguro-hogar" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center row-toggle collapsed" id="row-seguro-vida">
-                                        <span class="text-gray-600">Seguro vida (1er año)</span>
-                                        <span id="res-seguro-vida" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Seguro vida</span>
+                                        <span id="res-seguro-vida" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
                                     <div class="flex justify-between items-center row-toggle collapsed" id="row-otros">
-                                        <span class="text-gray-600">Otros gastos</span>
-                                        <span id="res-otros" class="font-medium tabular-nums">—</span>
+                                        <span class="text-[#57534E]">Otros</span>
+                                        <span id="res-otros" class="font-semibold tabular-nums text-[#1C1917]">—</span>
                                     </div>
-                                    <div class="border-t border-gray-300 pt-3 mt-2">
+                                    <div class="border-t border-[#EDE8DC] pt-2.5 mt-1">
                                         <div class="flex justify-between font-bold">
-                                            <span class="text-gray-800">TOTAL liquidez necesaria</span>
-                                            <span id="total-liquidez" class="text-indigo-700 text-base tabular-nums">—</span>
+                                            <span class="text-[#1C1917] text-xs">TOTAL liquidez</span>
+                                            <span id="total-liquidez" class="text-[#4F46E5] text-sm tabular-nums">—</span>
                                         </div>
-                                    </div>
-                                    <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                        <span>% sobre el precio del inmueble</span>
-                                        <span id="pct-sobre-inmueble" class="font-medium">—</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Coste total de la operación -->
-                            <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100 stagger-card" style="--card-delay:260ms">
-                                <h3 class="text-sm font-bold text-indigo-800 mb-3 flex items-center gap-2">
-                                    <i class="fas fa-sigma text-indigo-500"></i>
-                                    Coste total de la operación
-                                </h3>
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between">
-                                        <span class="text-indigo-700">Capital prestado</span>
-                                        <span id="res-capital-prestado" class="font-medium text-indigo-800 tabular-nums">—</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-indigo-700">Total intereses hipoteca</span>
-                                        <span id="res-intereses-op" class="font-medium text-red-500 tabular-nums">—</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-indigo-700">Gastos e impuestos</span>
-                                        <span id="res-gastos-op" class="font-medium text-indigo-800 tabular-nums">—</span>
-                                    </div>
-                                    <div class="border-t border-indigo-200 pt-2 mt-1">
-                                        <div class="flex justify-between font-bold">
-                                            <span class="text-indigo-900">TOTAL operación</span>
-                                            <span id="total-operacion" class="text-indigo-900 text-base tabular-nums">—</span>
+                                        <div class="flex justify-between mt-1">
+                                            <span class="text-[0.65rem] text-[#A8A29E]">% sobre precio</span>
+                                            <span id="pct-sobre-inmueble" class="text-[0.65rem] font-semibold text-[#57534E]">—</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Gráfico a pantalla completa -->
-                <div id="grafico-container" class="mt-12 section-enter full-width-chart">
-                    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Evolución de la hipoteca</h2>
+                            <!-- Total operación -->
+                            <div class="res-card res-card-indigo stagger-card" style="--card-delay:260ms">
+                                <p class="text-[0.63rem] font-bold text-[#4338CA] uppercase tracking-widest mb-3 flex items-center gap-1.5" style="letter-spacing:0.12em">
+                                    <i class="fas fa-sigma text-[#6366F1]" style="font-size:0.7rem"></i>
+                                    Coste total operación
+                                </p>
+                                <div class="space-y-2 text-xs">
+                                    <div class="flex justify-between">
+                                        <span class="text-[#4338CA]">Capital prestado</span>
+                                        <span id="res-capital-prestado" class="font-semibold text-[#312E81] tabular-nums">—</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-[#4338CA]">Intereses hipoteca</span>
+                                        <span id="res-intereses-op" class="font-semibold text-red-500 tabular-nums">—</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-[#4338CA]">Gastos e impuestos</span>
+                                        <span id="res-gastos-op" class="font-semibold text-[#312E81] tabular-nums">—</span>
+                                    </div>
+                                    <div class="border-t border-indigo-200 pt-2.5">
+                                        <div class="flex justify-between font-bold">
+                                            <span class="text-[#312E81] text-xs">TOTAL</span>
+                                            <span id="total-operacion" class="text-[#312E81] text-sm tabular-nums">—</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- /resultados -->
+                    </div><!-- /results col -->
+
+                </div><!-- /grid -->
+            </div><!-- /bezel-inner -->
+        </div><!-- /bezel-outer -->
+
+        <!-- ── GRÁFICO ── -->
+        <div id="grafico-container" class="mt-8 section-enter full-width-chart">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bezel-outer">
+                    <div class="bezel-inner p-6 sm:p-8">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A8A29E] mb-5" style="letter-spacing:0.14em">Evolución de la hipoteca</p>
                         <div class="chart-container">
                             <div id="amortizacion-chart"></div>
                         </div>
@@ -651,61 +896,69 @@
             </div>
         </div>
 
-        <!-- Tabla de amortización -->
-        <div id="tabla-amortizacion" class="bg-white rounded-xl shadow-md mt-8 overflow-hidden section-enter">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-gray-800">Tabla de amortización</h2>
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-500">Mostrar:</span>
-                        <select id="filas-por-pagina" class="text-sm border border-gray-300 rounded-md px-2 py-1 focus:border-indigo-500 focus:outline-none">
-                            <option value="12">12 meses</option>
-                            <option value="24">24 meses</option>
-                            <option value="60">5 años</option>
-                            <option value="120">10 años</option>
-                        </select>
+        <!-- ── TABLA ── -->
+        <div id="tabla-amortizacion" class="mt-6 section-enter reveal">
+            <div class="bezel-outer">
+                <div class="bezel-inner overflow-hidden">
+                    <div class="px-6 sm:px-8 py-5 border-b border-[#EDE8DC] flex justify-between items-center">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A8A29E]" style="letter-spacing:0.14em">Tabla de amortización</p>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-[#A8A29E]">Mostrar</span>
+                            <select id="filas-por-pagina" class="text-xs border border-[#EDE8DC] rounded-lg px-2.5 py-1.5 bg-[#FDFBF7] text-[#57534E] focus:border-[#4F46E5] focus:outline-none font-medium">
+                                <option value="12">12 meses</option>
+                                <option value="24">24 meses</option>
+                                <option value="60">5 años</option>
+                                <option value="120">10 años</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Cuota</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Capital</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Intereses</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amortización extra</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Capital pendiente</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-body" class="bg-white divide-y divide-gray-100"></tbody>
-                </table>
-            </div>
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
-                <div class="text-sm text-gray-500">Página <span id="current-page">1</span> de <span id="total-pages">1</span></div>
-                <div class="flex gap-2">
-                    <button id="prev-page" class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed" disabled>Anterior</button>
-                    <button id="next-page" class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed" disabled>Siguiente</button>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-xs">
+                            <thead>
+                                <tr class="bg-[#F5F1E8]">
+                                    <th class="px-5 py-3 text-left font-semibold text-[#A8A29E] uppercase tracking-widest" style="font-size:0.6rem;letter-spacing:0.12em">Fecha</th>
+                                    <th class="px-5 py-3 text-right font-semibold text-[#A8A29E] uppercase tracking-widest" style="font-size:0.6rem;letter-spacing:0.12em">Cuota</th>
+                                    <th class="px-5 py-3 text-right font-semibold text-[#A8A29E] uppercase tracking-widest" style="font-size:0.6rem;letter-spacing:0.12em">Capital</th>
+                                    <th class="px-5 py-3 text-right font-semibold text-[#A8A29E] uppercase tracking-widest" style="font-size:0.6rem;letter-spacing:0.12em">Intereses</th>
+                                    <th class="px-5 py-3 text-right font-semibold text-[#A8A29E] uppercase tracking-widest" style="font-size:0.6rem;letter-spacing:0.12em">Amort. extra</th>
+                                    <th class="px-5 py-3 text-right font-semibold text-[#A8A29E] uppercase tracking-widest" style="font-size:0.6rem;letter-spacing:0.12em">Pendiente</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-body" class="divide-y divide-[#F5F1E8]"></tbody>
+                        </table>
+                    </div>
+                    <div class="px-6 sm:px-8 py-4 bg-[#FDFBF7] border-t border-[#EDE8DC] flex justify-between items-center">
+                        <p class="text-xs text-[#A8A29E]">Pág. <span id="current-page">1</span> de <span id="total-pages">1</span></p>
+                        <div class="flex gap-2">
+                            <button id="prev-page" class="px-3 py-1.5 border border-[#EDE8DC] rounded-lg text-xs font-medium text-[#57534E] bg-white hover:bg-[#F5F1E8] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150" disabled>Anterior</button>
+                            <button id="next-page" class="px-3 py-1.5 border border-[#EDE8DC] rounded-lg text-xs font-medium text-[#57534E] bg-white hover:bg-[#F5F1E8] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150" disabled>Siguiente</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Nota informativa -->
-        <div class="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-5 text-sm text-amber-900">
-            <div class="flex gap-2 mb-2">
-                <i class="fas fa-info-circle text-amber-500 mt-0.5"></i>
-                <strong>Notas sobre impuestos en Cataluña</strong>
+        <!-- ── NOTA LEGAL ── -->
+        <div class="mt-8 reveal">
+            <div class="bezel-outer">
+                <div class="bezel-inner px-6 sm:px-8 py-5">
+                    <div class="flex gap-3">
+                        <i class="fas fa-info-circle text-[#D97706] mt-0.5 flex-shrink-0" style="font-size:0.8rem"></i>
+                        <div>
+                            <p class="text-xs font-semibold text-[#92400E] mb-2 uppercase tracking-wider" style="font-size:0.68rem;letter-spacing:0.1em">Notas sobre impuestos en Cataluña</p>
+                            <ul class="text-xs text-[#57534E] space-y-1.5 leading-relaxed">
+                                <li><strong class="text-[#1C1917]">ITP (Segunda mano):</strong> 10% general. Reducciones para familias numerosas o menores de 32 años con renta limitada.</li>
+                                <li><strong class="text-[#1C1917]">IVA (Obra nueva):</strong> 10% general · 4% para VPO.</li>
+                                <li><strong class="text-[#1C1917]">AJD (Obra nueva):</strong> 1,5% compraventa. El AJD hipotecario lo paga el banco desde nov. 2018 (Ley 5/2019).</li>
+                                <li>Los importes son estimaciones. Consulta siempre con un profesional antes de tomar decisiones financieras.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <ul class="list-disc ml-5 space-y-1 text-amber-800">
-                <li><strong>ITP (Segunda mano):</strong> 10% general. Posibles reducciones para familias numerosas o compradores menores de 32 años con renta limitada.</li>
-                <li><strong>IVA (Obra nueva):</strong> 10% general · 4% para Vivienda de Protección Oficial (VPO).</li>
-                <li><strong>AJD (Obra nueva):</strong> 1,5% sobre el valor escriturado de la compraventa. El AJD de la escritura hipotecaria lo paga el banco desde nov. 2018 (Ley 5/2019).</li>
-                <li><strong>Comisión de apertura:</strong> Varía según banco. Muchas hipotecas actuales la ofrecen a 0%.</li>
-                <li>Los importes calculados son estimaciones. Consulta siempre con un profesional antes de tomar decisiones financieras.</li>
-            </ul>
         </div>
-    </div>
+
+    </main><!-- /main -->
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
@@ -749,12 +1002,8 @@
                 const esNueva = this.value === 'nueva';
                 bloqueItp.classList.toggle('active', !esNueva);
                 bloqueIvaAjd.classList.toggle('active', esNueva);
-                labelSegunda.classList.toggle('border-indigo-500', !esNueva);
-                labelSegunda.classList.toggle('bg-indigo-50',     !esNueva);
-                labelSegunda.classList.toggle('border-gray-200',   esNueva);
-                labelNueva.classList.toggle('border-indigo-500',   esNueva);
-                labelNueva.classList.toggle('bg-indigo-50',        esNueva);
-                labelNueva.classList.toggle('border-gray-200',    !esNueva);
+                labelSegunda.classList.toggle('active', !esNueva);
+                labelNueva.classList.toggle('active', esNueva);
                 recalcularImpuestos();
             });
         });
@@ -783,24 +1032,24 @@
             const id = Date.now();
             const div = document.createElement('div');
             div.id = `aportacion-${id}`;
-            div.className = 'grid grid-cols-1 sm:grid-cols-3 gap-3 items-end border border-gray-200 rounded-xl p-4 bg-gray-50';
+            div.className = 'grid grid-cols-1 sm:grid-cols-3 gap-3 items-end border border-[#EDE8DC] rounded-xl p-4 bg-[#F5F1E8]/60';
             div.innerHTML = `
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Importe (€)</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-euro-sign text-gray-400"></i></div>
+                    <label class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Importe (€)</label>
+                    <div class="input-wrap">
+                        <span class="input-icon-left"><i class="fas fa-euro-sign"></i></span>
                         <input type="number" id="monto-${id}" class="input-field" placeholder="5000" min="1" step="100">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-calendar-day text-gray-400"></i></div>
+                    <label class="block text-xs font-semibold text-[#57534E] mb-1.5 uppercase tracking-wide" style="font-size:0.7rem;letter-spacing:0.08em">Fecha</label>
+                    <div class="input-wrap">
+                        <span class="input-icon-left"><i class="fas fa-calendar-day"></i></span>
                         <input type="date" id="fecha-ap-${id}" class="input-field" value="${fechaHoy}">
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <button onclick="eliminarAportacion(${id})" class="text-red-400 hover:text-red-600 flex items-center gap-1 text-sm">
+                    <button onclick="eliminarAportacion(${id})" class="flex items-center gap-1.5 text-red-400 hover:text-red-600 text-xs font-medium transition-colors duration-150">
                         <i class="fas fa-trash-alt"></i> Eliminar
                     </button>
                 </div>
@@ -894,7 +1143,7 @@
 
             const fechaFin = new Date(fechaInicio);
             fechaFin.setMonth(fechaFin.getMonth() + plazoMeses);
-            document.getElementById('fecha-fin').textContent = fechaFin.toLocaleDateString('es-ES', { year: 'numeric', month: 'long' });
+            document.getElementById('fecha-fin').textContent = fechaFin.toLocaleDateString('es-ES', { year: 'numeric', month: 'short' });
 
             /* Desglose liquidez */
             document.getElementById('res-entrada').textContent   = fmt(entrada);
@@ -906,7 +1155,7 @@
             document.getElementById('total-liquidez').textContent = fmt(totalLiquidez);
             document.getElementById('pct-sobre-inmueble').textContent = ((totalLiquidez / valorInmueble) * 100).toFixed(1) + '%';
 
-            /* ITP / IVA+AJD rows — animated toggle via row-toggle/collapsed */
+            /* ITP / IVA+AJD rows */
             document.getElementById('row-itp').classList.toggle('collapsed', esNueva);
             document.getElementById('row-iva').classList.toggle('collapsed', !esNueva);
             document.getElementById('row-ajd').classList.toggle('collapsed', !esNueva);
@@ -926,17 +1175,13 @@
             document.getElementById('row-otros').classList.toggle('collapsed', costoOtros === 0);
             document.getElementById('res-otros').textContent = fmt(costoOtros);
 
-            /* Mostrar panel — Jakub enter recipe + stagger cards */
+            /* Mostrar panel — Jakub enter recipe + stagger */
             const primeraVez = !resultadosDiv.classList.contains('visible');
             if (primeraVez) {
-                /* Fade out placeholder */
                 sinResultadosDiv.classList.add('placeholder-exit');
                 setTimeout(() => sinResultadosDiv.classList.add('hidden'), 180);
-
-                /* Trigger section enter (needs a frame so browser registers the initial state) */
                 requestAnimationFrame(() => requestAnimationFrame(() => {
                     resultadosDiv.classList.add('visible');
-                    /* Stagger each card slightly after the container starts entering */
                     resultadosDiv.querySelectorAll('.stagger-card').forEach(card => {
                         requestAnimationFrame(() => card.classList.add('visible'));
                     });
@@ -960,10 +1205,8 @@
                 }
             });
             aportaciones.sort((a, b) => a.fecha - b.fecha);
-
             const fechaFin = new Date(fechaInicio);
             fechaFin.setMonth(fechaFin.getMonth() + plazoMeses);
-
             aportaciones.forEach(ap => {
                 if (ap.fecha >= fechaInicio && ap.fecha < fechaFin) {
                     const diff = (ap.fecha.getFullYear() - fechaInicio.getFullYear()) * 12 +
@@ -978,32 +1221,22 @@
             let capitalPendiente = capital;
             const tabla = [];
             let ahorroTotal = 0;
-
             for (let mes = 1; mes <= plazoMeses; mes++) {
                 const fechaPago = new Date(fechaInicio);
                 fechaPago.setMonth(fechaPago.getMonth() + mes - 1);
-
                 const intereses   = capitalPendiente * interesMensual;
                 let amortizacion  = cuota - intereses;
                 let aportacion    = 0;
-
                 const apMes = aportaciones.find(ap => ap.mes === mes);
                 if (apMes) {
                     aportacion = apMes.monto;
                     capitalPendiente -= aportacion;
                     ahorroTotal += apMes.monto * interesMensual * (plazoMeses - mes + 1);
                 }
-
                 capitalPendiente -= amortizacion;
-
-                if (mes === plazoMeses) {
-                    amortizacion += capitalPendiente;
-                    capitalPendiente = 0;
-                }
-
+                if (mes === plazoMeses) { amortizacion += capitalPendiente; capitalPendiente = 0; }
                 tabla.push({ mes, fecha: fechaPago, cuota, amortizacion, intereses, aportacion, capitalPendiente: Math.max(0, capitalPendiente) });
             }
-
             document.getElementById('ahorro-aportaciones').textContent = ahorroTotal > 0 ? fmt(ahorroTotal) : '0 €';
             return tabla;
         }
@@ -1021,22 +1254,20 @@
             const pagData = amortizacionData.slice(start, start + rowsPerPage);
             const tbody = document.getElementById('tabla-body');
             tbody.innerHTML = '';
-
             pagData.forEach((item, idx) => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-indigo-50/30 transition-colors row-in';
+                tr.className = 'hover:bg-[#F5F1E8]/60 transition-colors row-in';
                 tr.style.animationDelay = `${idx * 18}ms`;
                 tr.innerHTML = `
-                    <td class="px-5 py-3 whitespace-nowrap text-gray-500">${item.fecha.toLocaleDateString('es-ES', { year:'numeric', month:'short', day:'numeric' })}</td>
-                    <td class="px-5 py-3 whitespace-nowrap text-right font-medium text-gray-900">${fmt(item.cuota)}</td>
-                    <td class="px-5 py-3 whitespace-nowrap text-right text-indigo-700">${fmt(item.amortizacion)}</td>
+                    <td class="px-5 py-3 whitespace-nowrap text-[#A8A29E]">${item.fecha.toLocaleDateString('es-ES', { year:'numeric', month:'short', day:'numeric' })}</td>
+                    <td class="px-5 py-3 whitespace-nowrap text-right font-semibold text-[#1C1917]">${fmt(item.cuota)}</td>
+                    <td class="px-5 py-3 whitespace-nowrap text-right text-[#4F46E5]">${fmt(item.amortizacion)}</td>
                     <td class="px-5 py-3 whitespace-nowrap text-right text-red-500">${fmt(item.intereses)}</td>
-                    <td class="px-5 py-3 whitespace-nowrap text-right ${item.aportacion > 0 ? 'font-semibold text-green-600' : 'text-gray-400'}">${item.aportacion > 0 ? fmt(item.aportacion) : '—'}</td>
-                    <td class="px-5 py-3 whitespace-nowrap text-right text-gray-600">${fmt(item.capitalPendiente)}</td>
+                    <td class="px-5 py-3 whitespace-nowrap text-right ${item.aportacion > 0 ? 'font-semibold text-green-600' : 'text-[#A8A29E]'}">${item.aportacion > 0 ? fmt(item.aportacion) : '—'}</td>
+                    <td class="px-5 py-3 whitespace-nowrap text-right text-[#57534E]">${fmt(item.capitalPendiente)}</td>
                 `;
                 tbody.appendChild(tr);
             });
-
             document.getElementById('current-page').textContent = currentPage;
             document.getElementById('prev-page').disabled = currentPage === 1;
             document.getElementById('next-page').disabled = currentPage * rowsPerPage >= amortizacionData.length;
@@ -1045,17 +1276,13 @@
         function cambiarPagina(delta) {
             const total = Math.ceil(amortizacionData.length / rowsPerPage);
             const newPage = currentPage + delta;
-            if (newPage >= 1 && newPage <= total) {
-                currentPage = newPage;
-                actualizarTabla();
-            }
+            if (newPage >= 1 && newPage <= total) { currentPage = newPage; actualizarTabla(); }
         }
 
         /* ─── Gráfico ─── */
         function mostrarGraficoAmortizacion() {
             const labels = [], capitalData = [], interesesData = [], capitalPendienteData = [];
             const step = Math.max(1, Math.floor(amortizacionData.length / 12));
-
             for (let i = 0; i < amortizacionData.length; i += step) {
                 const item = amortizacionData[i];
                 labels.push(item.fecha.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }));
@@ -1063,7 +1290,6 @@
                 interesesData.push(parseFloat(item.intereses.toFixed(2)));
                 capitalPendienteData.push(parseFloat(item.capitalPendiente.toFixed(2)));
             }
-
             const lastItem = amortizacionData[amortizacionData.length - 1];
             const lastLabel = lastItem.fecha.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
             if (!labels.includes(lastLabel)) {
@@ -1072,61 +1298,54 @@
                 interesesData.push(parseFloat(lastItem.intereses.toFixed(2)));
                 capitalPendienteData.push(0);
             }
-
             const opts = {
                 series: [
-                    { name: 'Capital amortizado', data: capitalData, color: '#4f46e5' },
-                    { name: 'Intereses',           data: interesesData, color: '#f43f5e' }
+                    { name: 'Capital amortizado', data: capitalData, color: '#4F46E5' },
+                    { name: 'Intereses',           data: interesesData, color: '#F43F5E' }
                 ],
-                chart: {
-                    type: 'bar',
-                    height: '100%',
-                    width: '100%',
-                    stacked: true,
-                    toolbar: { show: true }
-                },
-                plotOptions: {
-                    bar: { horizontal: false, borderRadius: 3, columnWidth: '75%' }
-                },
+                chart: { type: 'bar', height: '100%', width: '100%', stacked: true, toolbar: { show: true },
+                    background: 'transparent',
+                    fontFamily: "'Plus Jakarta Sans', sans-serif" },
+                plotOptions: { bar: { horizontal: false, borderRadius: 4, columnWidth: '70%' } },
                 dataLabels: { enabled: false },
-                xaxis: {
-                    categories: labels,
-                    labels: { rotate: -45, style: { fontSize: '11px' } }
-                },
-                yaxis: {
-                    title: { text: 'Euros', style: { fontSize: '13px', fontWeight: 600 } },
-                    labels: { formatter: v => v.toFixed(0) + '€' }
-                },
-                legend: { position: 'top', fontSize: '13px', itemMargin: { horizontal: 12 } },
+                xaxis: { categories: labels, labels: { rotate: -45, style: { fontSize: '11px', fontFamily: "'Plus Jakarta Sans', sans-serif", colors: '#A8A29E' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+                yaxis: { labels: { formatter: v => v.toFixed(0) + '€', style: { fontSize: '11px', fontFamily: "'Plus Jakarta Sans', sans-serif", colors: '#A8A29E' } } },
+                legend: { position: 'top', fontSize: '12px', fontFamily: "'Plus Jakarta Sans', sans-serif", itemMargin: { horizontal: 12 } },
                 fill: { opacity: 1 },
+                grid: { borderColor: '#EDE8DC', strokeDashArray: 4 },
                 tooltip: {
                     custom: function ({ series, dataPointIndex, w }) {
                         const cap  = series[0][dataPointIndex];
                         const int  = series[1][dataPointIndex];
                         const pend = capitalPendienteData[dataPointIndex];
                         const fecha = w.globals.labels[dataPointIndex];
-                        return `
-                            <div style="padding:10px 14px;font-size:13px;line-height:1.6">
-                                <div style="font-weight:700;margin-bottom:6px;color:#1f2937">${fecha}</div>
-                                <div style="display:flex;justify-content:space-between;gap:16px"><span style="color:#4f46e5">● Capital amortizado</span><strong>${cap.toFixed(2)} €</strong></div>
-                                <div style="display:flex;justify-content:space-between;gap:16px"><span style="color:#f43f5e">● Intereses</span><strong>${int.toFixed(2)} €</strong></div>
-                                <div style="display:flex;justify-content:space-between;gap:16px;border-top:1px solid #e5e7eb;margin-top:6px;padding-top:6px"><span style="color:#7c3aed">● Capital pendiente</span><strong>${pend.toFixed(2)} €</strong></div>
-                            </div>
-                        `;
+                        return `<div style="padding:12px 16px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.7;background:#fff;border:1px solid #EDE8DC;border-radius:12px;box-shadow:0 4px 16px rgba(28,25,23,0.08)">
+                            <div style="font-weight:700;margin-bottom:8px;color:#1C1917">${fecha}</div>
+                            <div style="display:flex;justify-content:space-between;gap:20px"><span style="color:#4F46E5;font-weight:500">● Capital</span><strong>${cap.toFixed(2)} €</strong></div>
+                            <div style="display:flex;justify-content:space-between;gap:20px"><span style="color:#F43F5E;font-weight:500">● Intereses</span><strong>${int.toFixed(2)} €</strong></div>
+                            <div style="display:flex;justify-content:space-between;gap:20px;border-top:1px solid #EDE8DC;margin-top:8px;padding-top:8px"><span style="color:#7C3AED;font-weight:500">● Pendiente</span><strong>${pend.toFixed(2)} €</strong></div>
+                        </div>`;
                     }
                 }
             };
-
-            if (amortizacionChart) {
-                amortizacionChart.destroy();
-                document.getElementById('amortizacion-chart').innerHTML = '';
-            }
-
+            if (amortizacionChart) { amortizacionChart.destroy(); document.getElementById('amortizacion-chart').innerHTML = ''; }
             requestAnimationFrame(() => requestAnimationFrame(() => graficoContainer.classList.add('visible')));
-
             amortizacionChart = new ApexCharts(document.getElementById('amortizacion-chart'), opts);
             amortizacionChart.render();
         }
+
+        /* ─── Scroll-reveal via IntersectionObserver ─── */
+        const revealEls = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        revealEls.forEach(el => observer.observe(el));
+
     });
     </script>
 </body>
